@@ -7,9 +7,9 @@ set(SOURCE_FILES main.cpp)
 
 if (APPLE)
     add_subdirectory(metalcpp)  # Library definition
-
-    add_subdirectory(test)
 endif()
 
 include_directories(src)
 add_subdirectory(src)
+
+add_subdirectory(test)
