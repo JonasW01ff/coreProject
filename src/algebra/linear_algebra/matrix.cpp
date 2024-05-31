@@ -5,6 +5,7 @@
  */
 
 #include "matrix.h"
+#include <Accelerate/Accelerate.h>
 #include <iostream>
 
 /**
@@ -19,17 +20,13 @@ mat::mat() {
  * @param N The number of rows in the matrix.
  * @param M The number of columns in the matrix.
  */
-mat::mat(int N, int M) {
+mat::mat(int &N, int &M) {
 
     // Initialize matrix with size NxM
-    data.resize(N);
-    for (int i=0; i<N; i++){
-        data[i].resize(M);
-        for (int j=0; j<M; j++){
-            // Set all entries to 0
-            data[i][j] = 0;
-        }
-    }
+    data = vector<double>(N*M, 0.);
+
+    this->N = N;
+    this->M = M;
 };
 
 /**
@@ -49,12 +46,93 @@ mat::~mat() {
 double mat::getEntry(int i, int j) {
 
     // Check that entry is inside matrix bounds.
-    if (i >= data.size()){
-        throw std::runtime_error("The matrix has too few rows.");
-    } else if (j >= data[i].size()){
-        throw std::runtime_error("The matrix has too few columns.");
+    if (i*M+j > data.size()){
+        throw std::runtime_error("The matrix has too few entries.");
     }
 
     // Return entry.
-    return data[i][j];
+    return data[i*M+j];
+}
+
+double& mat::getReference(int i, int j) {
+
+    // Check that entry is inside matrix bounds.
+    if (i*M+j > data.size()){
+        throw std::runtime_error("The matrix has too few entries.");
+    }
+
+    // Return entry.
+    return data[i*M+j];
+}
+
+
+void mat::setEntry(int i, int j, double value) {
+
+    // Check that entry is inside matrix bounds.
+    if (i*M+j > data.size()){
+        throw std::runtime_error("The matrix has too few entries.");
+    }
+
+    // Set entry value
+    data[i*M+j] = value;
+
+}
+
+int mat::nRows() {
+    return N;
+}
+
+int mat::nCols(){
+    return M;
+}
+
+void mat::getRow(int i,vector<double> &res) {
+
+    // Check that the dimensions match
+    if (res.size() != M){
+        throw runtime_error("Vector needs to be the same size as the number of columns");
+    }
+
+    // Allocate row
+    for (int k=0; k<res.size(); k++){
+        res[k] = this->data[i*N+k];
+    }
+
+}
+
+void mat::getCol(int j, vector<double> &res) {
+
+    //Check that dimension match
+    if (res.size() != N){
+        throw runtime_error("Vector needs to be the same size as the number of rows");
+    }
+
+    // Allocate Column
+    for (int k=0; k<res.size(); k++){
+        res[k] = this->data[k*N+j];
+    }
+
+}
+
+
+void mat::matmul(mat &xmat, mat &res) {
+
+    // Check that dimensions match
+    if(M != xmat.nRows()){
+        throw std::runtime_error("Matrix multiplication can only take the format MxN * N*K");
+    }
+
+    // perform matrix multiplication
+    for (int i=0; i<N; i++){
+        for (int j=0; j<xmat.nCols(); j++){
+
+            // Perform vector sum product
+            double &x = res.getReference(i, j);
+            for (int k=0; k<M; k++){
+                x += this->getEntry(i,k)*xmat.getEntry(k,j);
+            }
+
+        }
+    }
+
 }
