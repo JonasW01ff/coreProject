@@ -1,4 +1,5 @@
 #include "distribution_gamma.h"
+#include <stdexcept>
 #include <vector>
 #include <math.h>
 #include "../functions/functions_math.h"
