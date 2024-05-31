@@ -3,6 +3,7 @@ project(coreDLL)
 
 set(CMAKE_CXX_STANDARD 23)
 
+
 add_library(coreDLL SHARED functions_export.cpp
         functions/functions.cpp
         functions/functions_math.cpp

@@ -4,8 +4,11 @@
  * @brief Implementation file for the matrix class.
  */
 
+#if __APPLE__
+    #include <Accelerate/Accelerate.h>
+#endif
+
 #include "matrix.h"
-#include <Accelerate/Accelerate.h>
 #include <iostream>
 
 /**
